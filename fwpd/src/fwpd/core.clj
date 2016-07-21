@@ -36,18 +36,25 @@
 (defn append
   [valid suspects new-suspect]
   (if (valid new-suspect)
-    (conj new-suspect suspects)
+    (conj suspects new-suspect)
     (do (println "Invalid suspect")
         suspects)))
 
 (defn validate
   [validation-functions map-to-validate]
   (every? (fn [[mkey value]]
-            ((mkey validation-functions) value))
+            (if (mkey validation-functions)
+              ((get validation-functions mkey) value)
+              false))
           map-to-validate))
 
 (def append-validate
-  (partial append
-           (partial validate
+  (partial append (partial validate
                     {:name #(string? %)
                      :glitter-index #(integer? %)})))
+
+(= [{:name "bob" :glitter-index 5}] (append-validate [] {:name "bob" :glitter-index 5}))
+(= [] (append-validate [] {:name "bob" :glittindex 5}))
+(= [] (append-validate [] {:name "bob" :glitter-index 5 :foo "bar"}))
+(= [{:name "phil" :glitter-inder 10}]
+   (append-validate [{:name "phil" :glitter-inder 10}] {:name "bob" :glittindex 5}))
