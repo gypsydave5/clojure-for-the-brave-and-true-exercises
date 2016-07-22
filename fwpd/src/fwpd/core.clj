@@ -30,7 +30,7 @@
                  (map vector vamp-keys unmapped-row)))
        rows))
 
-;; Exercises
+                                        ; Exercises
 
 ;; 2, 3
 (defn append
@@ -58,3 +58,16 @@
 (= [] (append-validate [] {:name "bob" :glitter-index 5 :foo "bar"}))
 (= [{:name "phil" :glitter-inder 10}]
    (append-validate [{:name "phil" :glitter-inder 10}] {:name "bob" :glittindex 5}))
+
+;; 4
+(defn record->row
+  [separator record]
+  (clojure.string/join separator (vals record)))
+
+(defn rows->csv
+  [rows]
+  (clojure.string/join "\n" rows))
+
+(defn records->csv
+  [records]
+  (rows->csv (map (partial record->row ",") records)))
