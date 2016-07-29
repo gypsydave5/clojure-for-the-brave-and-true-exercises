@@ -94,4 +94,62 @@
         3 {:pegged true}
         4 {:pegged true :connections {1 2, 6 5}}
         5 {:pegged true}
-        6 {:pegged true :connections {1 3, 4 5}}} (new-board 3))))
+          6 {:pegged true :connections {1 3, 4 5}}} (new-board 3))))
+
+(deftest test-pegged?
+  (testing "predicate for position being pegged"
+    (is (true? (pegged? {1 {:pegged true}} 1)))
+    (is (false? (pegged? {1 {:pegged true}} 2)))))
+
+(deftest test-remove-peg
+  (testing "removes the peg at a position"
+    (is (= {1 {:pegged false}} (remove-peg {1 {:pegged true}} 1)))))
+
+(deftest test-place-peg
+  (testing "places the peg at a position"
+    (is (= {1 {:pegged true}} (place-peg {1 {:pegged false}} 1)))))
+
+(deftest test-move-peg
+  (testing "moving a peg"
+    (is (= {1 {:pegged true} 55 {:pegged false}}
+           (move-peg {1 {:pegged false} 55 {:pegged true}} 55 1)))))
+
+(deftest test-valid-moves
+  (testing "returns a list of valid moves from a board position"
+     (let [board (assoc-in (new-board 5) [4 :pegged] false)]
+       (is (= {4 2} (valid-moves board 1)))
+       (is (= {4 2 6 3} (valid-moves (remove-peg board 6) 1)))
+       (is (= {4 5} (valid-moves board 6)))
+       (is (= {4 7} (valid-moves board 11))))))
+
+(deftest test-valid-move?
+  (testing "can tell if a move is valid"
+    (let [board (assoc-in (new-board 5) [4 :pegged] false)]
+      (is (= 2 (valid-move? board 1 4)))
+      (is (= nil (valid-move? board 1 6)))
+      (is (= 3 (valid-move? (remove-peg board 6) 1 6))))))
+
+(deftest test-make-move
+  (testing "makes a move if the move is valid"
+    (let [board (assoc-in (new-board 5) [5 :pegged] false)]
+      (is (= nil
+             (make-move board 1 6)))
+      (is (= (place-peg (remove-peg (remove-peg board 12) 8) 5)
+             (make-move board 12 5)))
+      (is (= (place-peg (remove-peg (remove-peg board 14) 9) 5)
+             (make-move board 14 5))))))
+
+(deftest test-can-move?
+  (testing "are there any valid moves on the board"
+    (let [board (new-board 5)]
+      (is (nil? (can-move? board))))
+    (let [board (assoc-in (new-board 5) [5 :pegged] false)]
+      (is ((complement nil?) (can-move? board))))
+    (let [board (assoc-in (new-board 3) [2 :pegged] false)]
+      (is (nil? (can-move? board))))))
+
+(deftest test-colorize
+  (testing "colorizes a string based on a symbol"
+    (is (= "\033[34mblue\033[0m" (colorize "blue" :blue)))
+    (is (= "\033[31mred\033[0m" (colorize "red" :red)))
+    (is (= "\033[32mgreen\033[0m" (colorize "green" :green)))))
