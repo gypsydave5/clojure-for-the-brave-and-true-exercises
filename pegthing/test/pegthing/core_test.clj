@@ -153,3 +153,9 @@
     (is (= "\033[34mblue\033[0m" (colorize "blue" :blue)))
     (is (= "\033[31mred\033[0m" (colorize "red" :red)))
     (is (= "\033[32mgreen\033[0m" (colorize "green" :green)))))
+
+(deftest test-render-pos
+  (testing "renders a position with correct letter and peg state"
+    (let [board (new-board 3)]
+      (is (= "a\033[34m0\033[0m" (render-pos board 1)))
+      (is (= "c\033[31m-\033[0m" (render-pos (remove-peg board 3) 3))))))

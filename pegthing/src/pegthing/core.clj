@@ -152,6 +152,16 @@
         (= color :green) (str (ansi :green) string (ansi :reset))
         :else string))
 
+(defn render-pos
+  "Creates a string from a board position, converting the position number
+  to a letter in the range a-z, with the pegged state as the next character:
+  red '-' for no peg, blue '0' for pegged"
+  [board pos]
+  (str (nth letters (dec pos))
+       (if (pegged? board pos)
+         (colorize "0" :blue)
+         (colorize "-" :red))))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
