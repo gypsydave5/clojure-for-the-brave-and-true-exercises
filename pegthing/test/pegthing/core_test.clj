@@ -172,5 +172,12 @@
 
 (deftest test-render-row
   (testing "correctly renders a row"
-    (is (= "  a\033[34m0\033[0m" (render-row (new-board 2) 1)))
-    (is (= "b\033[31m-\033[0m c\033[34m0\033[0m" (render-row (remove-peg (new-board 2) 2) 2)))))
+    (is (= "  a\033[34m0\033[0m"
+           (render-row (new-board 2) 1)))
+    (is (= "b\033[31m-\033[0m c\033[34m0\033[0m"
+           (render-row (remove-peg (new-board 2) 2) 2)))))
+
+(deftest test-render-board
+  (testing "correctly printing a board"
+    (is (=  "  a\033[34m0\033[0m\nb\033[31m-\033[0m c\033[34m0\033[0m"
+            (render-board (remove-peg (new-board 2) 2))))))

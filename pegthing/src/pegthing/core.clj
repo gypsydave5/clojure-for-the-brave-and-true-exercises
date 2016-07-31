@@ -4,7 +4,7 @@
 
 (declare successful-move prompt-move game-over query-rows)
 
-;; board set up
+                                        ; board set up
 (defn tri*
   ([] (tri* 0 1))
   ([sum n]
@@ -133,7 +133,7 @@
   (some (comp not-empty (partial valid-moves board))
         (positions-with-pegs board)))
 
-;; board rendering
+                                        ; board rendering
 (def alpha-start 97)
 (def alpha-end 123)
 (def letters (map (comp str char) (range alpha-start alpha-end)))
@@ -180,6 +180,19 @@
        (clojure.string/join " "
                             (map (partial render-pos board)
                                  (row-positions row-num)))))
+
+(defn render-board
+  [board]
+  (clojure.string/join "\n" (map (partial render-row board)
+                                 (range 1 (inc (:rows board))))))
+
+;; not going to test print board - it's 'pure' side effect now. It's just:
+
+(defn print-board
+  [board]
+  (println (render-board board)))
+
+;; which I _think_ is cleaner - I may be wrong
 
 (defn -main
   "I don't do a whole lot ... yet."
