@@ -162,6 +162,25 @@
          (colorize "0" :blue)
          (colorize "-" :red))))
 
+(defn row-positions
+  "Returns all the positions on a given row"
+  [row-num]
+  (range (inc (or (row-tri (dec row-num)) 0))
+         (inc (row-tri row-num))))
+
+(defn row-padding
+  "String of spaces to leftpad a row"
+  [row-num rows]
+  (let [pad-length (/ (* (- rows row-num) pos-chars) 2)]
+    (apply str (take pad-length (repeat " ")))))
+
+(defn render-row
+  [board row-num]
+  (str (row-padding row-num (:rows board))
+       (clojure.string/join " "
+                            (map (partial render-pos board)
+                                 (row-positions row-num)))))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]

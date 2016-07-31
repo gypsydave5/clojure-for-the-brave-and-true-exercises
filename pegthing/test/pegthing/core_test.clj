@@ -159,3 +159,18 @@
     (let [board (new-board 3)]
       (is (= "a\033[34m0\033[0m" (render-pos board 1)))
       (is (= "c\033[31m-\033[0m" (render-pos (remove-peg board 3) 3))))))
+
+(deftest test-row-positions
+  (is (= '(2 3) (row-positions 2)))
+  (is (= '(1) (row-positions 1)))
+  (is (= '(7 8 9 10) (row-positions 4))))
+
+(deftest test-row-padding
+  (testing "gets correct left string value given row number and number of rows"
+    (is (= "  " (row-padding 1 2)))
+    (is (= "   " (row-padding 1 3)))))
+
+(deftest test-render-row
+  (testing "correctly renders a row"
+    (is (= "  a\033[34m0\033[0m" (render-row (new-board 2) 1)))
+    (is (= "b\033[31m-\033[0m c\033[34m0\033[0m" (render-row (remove-peg (new-board 2) 2) 2)))))
