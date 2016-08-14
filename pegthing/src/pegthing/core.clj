@@ -194,6 +194,14 @@
 
 ;; which I _think_ is cleaner - I may be wrong
 
+(def alpaha-start
+  (int \a))
+
+(defn letter->pos
+  "converts a letter string to the corresponding position number"
+  [letter]
+  (inc (- (int (first letter)) alpaha-start)))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]

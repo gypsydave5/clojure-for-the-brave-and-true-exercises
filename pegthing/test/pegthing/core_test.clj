@@ -181,3 +181,8 @@
   (testing "correctly printing a board"
     (is (=  "  a\033[34m0\033[0m\nb\033[31m-\033[0m c\033[34m0\033[0m"
             (render-board (remove-peg (new-board 2) 2))))))
+
+(deftest test-letter->pos
+  (testing "converts a letter to the correct position")
+  (is (= 1 (letter->pos "a"))
+      (= 5 (letter->pos "e"))))
