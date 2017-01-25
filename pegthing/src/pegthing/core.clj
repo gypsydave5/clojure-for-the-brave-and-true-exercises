@@ -202,6 +202,32 @@
   [letter]
   (inc (- (int (first letter)) alpaha-start)))
 
+;; this is the original get-input
+
+(defn original-get-input
+  "Waits for user to enter text and hit enter, then cleans the input"
+  ([] (original-get-input nil))
+  ([default]
+   (let [input (clojure.string/trim (read-line))]
+     (if (empty? input)
+       default
+       (clojure.string/lower-case input)))))
+
+;; but this doesn't isolate side effects too well... so I think we should
+;; inject the read-line function to create get-input, then use partial
+;; application to get where we need to go
+
+(defn get-input-from
+  "takes a function that produces strings and cleans them"
+  ([input-fn]
+   (fn get-input
+     ([] (get-input nil))
+     ([default]
+      (let [input (clojure.string/trim (input-fn))]
+        (if (empty? input)
+          default
+          (clojure.string/lower-case input)))))))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
