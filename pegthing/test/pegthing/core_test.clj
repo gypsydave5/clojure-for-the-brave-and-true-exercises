@@ -188,8 +188,8 @@
       (= 5 (letter->pos "e"))))
 
 (deftest test-get-input-from
-  (let [get-input (get-input-from (fn [] "output"))]
-    (testing "takes input from the supplied input function"
-      (is (= "output" (get-input))))
-    (testing "uses the default if supplied"
-      (is (= "default" (get-input "default"))))))
+   (let [get-input (get-input-from (fn [] "output    "))]
+     (testing "takes input from the supplied input function"
+       (is (= "output" (get-input))))
+     (testing "uses the default if supplied"
+       (is (= "default" (get-input "default"))))))
