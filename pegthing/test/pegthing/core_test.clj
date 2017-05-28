@@ -2,10 +2,6 @@
   (:require [clojure.test :refer :all]
             [pegthing.core :refer :all]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 1 1))))
-
 (deftest test-tri*
   (testing "tri* creates a lazy list of triangular numbers."
     (is (= '(1 3 6) (take 3 (tri*))))
@@ -25,7 +21,6 @@
   (testing "returns the triangular number at the end of a row"
     (is (= 3 (row-tri 2)))
     (is (= 15 (row-tri 5)))))
-
 
 (deftest test-row-num
   (testing "row-num returns the row that a number apperas in."
@@ -194,3 +189,8 @@
        (is (= "output" (get-input))))
      (testing "uses the default if supplied"
        (is (= "default" (get-input-no-input "default"))))))
+
+(deftest test-characters-as-strings
+  (testing "converts a string to a list of characters (as strings)"
+    (is (= '("a" "b" "c") (characters-as-strings "a bc")))
+    (is (= '("a" "c") (characters-as-strings "a %4   c")))))

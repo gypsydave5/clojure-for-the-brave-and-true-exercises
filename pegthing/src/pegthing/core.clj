@@ -29,6 +29,7 @@
   (inc (count (take-while #(> n %) tri))))
 
 (defn in-bounds?
+  "is the first number the greatest number"
   [n & rest]
   (= n (apply max n rest)))
 
@@ -36,32 +37,35 @@
   "Form a mutual connection between two positions"
   [board max-pos pos neighbour destination]
   (if (in-bounds? max-pos pos neighbour destination)
-    (reduce (fn [new-board [p1 p2]]
-              (assoc-in new-board [p1 :connections p2] neighbour))
-            board
-            [[pos destination] [destination pos]])
-    board))
+      (reduce (fn [new-board [p1 p2]]
+                (assoc-in new-board [p1 :connections p2] neighbour))
+              board
+              [[pos destination] [destination pos]])
+      board))
 
 (defn connect-right
   "Connect a position to the neighbour plus one to the right"
   [board max-pos pos]
-  (let [neighbour (inc pos)
+  (let [neighbour   (inc pos)
         destination (inc neighbour)]
-    (if-not (or (triangular? neighbour) (triangular? pos))
-      (connect board max-pos pos neighbour destination)
-      board)))
+    (if-not
+        (or (triangular? neighbour) (triangular? pos))
+        (connect board max-pos pos neighbour destination)
+        board)))
 
 (defn connect-down-left
+  "Connect a position to the position down and to the left"
   [board max-pos pos]
-  (let [row (row-num pos)
-        neighbour (+ row pos)
+  (let [row         (row-num pos)
+        neighbour   (+ row pos)
         destination (+ 1 row neighbour)]
     (connect board max-pos pos neighbour destination)))
 
 (defn connect-down-right
+  "Connect a position to the position down and to the right"
   [board max-pos pos]
-  (let [row (row-num pos)
-        neighbour (+ 1 row pos)
+  (let [row         (row-num pos)
+        neighbour   (+ 1 row pos)
         destination (+ 2 row neighbour)]
     (connect board max-pos pos neighbour destination)))
 
@@ -220,15 +224,89 @@
 (defn get-input-from
   "takes a function that produces strings and cleans them"
   ([input-fn]
-   (fn get-input
-     ([] (get-input nil))
+   (fn get-input-inner
+     ([] (get-input-inner nil))
      ([default]
       (let [input (clojure.string/trim (input-fn))]
         (if (empty? input)
           default
           (clojure.string/lower-case input)))))))
 
+;; just a wrapper around the above to provide the same interface
+(def get-input
+  (get-input-from read-line))
+
+(defn characters-as-strings
+  "turns a string into a series of strings made of only characters"
+  ([string]
+   (re-seq #"[\p{Alpha}]" string)))
+
+
+(defn user-entered-invalid-move
+  "Handles the next step after a user has enetered an invalid move"
+  [board]
+  (println "\n!!! That was an invalid move :(\n")
+  (prompt-move board))
+
+(defn user-entered-valid-move
+  "Handles the next step after a user has entered an invalid move"
+  [board]
+  (if (can-move? board)
+    (prompt-move board)
+    (game-over board)))
+
+(defn prompt-move
+  [board]
+  (println
+   "\nHere's your board:")
+  (print-board board)
+  (println
+   "Move from where to where? Enter two letters:")
+  (let [input (map
+               letter->pos
+               (characters-as-strings
+                (get-input)))]
+    (if-let
+        [new-board
+         (make-move
+          board
+          (first input)
+          (second input))]
+        (user-entered-valid-move
+         new-board)
+        (user-entered-invalid-move
+         board))))
+
+(defn prompt-empty-peg
+  [board]
+  (println "Here's your board:")
+  (print-board board)
+  (println "Remove which peg? [e]")
+  (prompt-move (remove-peg board (letter->pos (get-input "e")))))
+
+(defn prompt-rows
+  []
+  (println "How many rows? [5]")
+  (let [rows (Integer. (get-input 5))
+        board (new-board rows)]
+    (prompt-empty-peg board)))
+
+(defn game-over
+  "Announce the game is over and prompt to play again"
+  [board]
+  (let [remaining-pegs (count (filter :pegged (vals board)))]
+    (println "Game over! You had" remaining-pegs "pegs left:")
+    (print-board board)
+    (println "Play again? y/n [y]")
+    (let [input (get-input "y")]
+      (if (= "y" input)
+        (prompt-rows)))))
+
 (defn -main
-  "I don't do a whole lot ... yet."
+  "Starts pegthing"
   [& args]
-  (println "Hello, World!"))
+  (println "Prepare to play ... pegthing!n\n")
+  (prompt-rows)
+  (do
+    (println "Bye!")
+    (System/exit 0)))
