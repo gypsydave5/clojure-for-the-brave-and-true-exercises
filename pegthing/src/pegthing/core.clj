@@ -222,19 +222,17 @@
 ;; application to get where we need to go
 
 (defn get-input-from
-  "takes a function that produces strings and cleans them"
-  ([input-fn]
-   (fn get-input-inner
-     ([] (get-input-inner nil))
-     ([default]
-      (let [input (clojure.string/trim (input-fn))]
-        (if (empty? input)
-          default
-          (clojure.string/lower-case input)))))))
+  "Takes a function that produces strings and cleans them. Accepts a default"
+  ([input-fn] (get-input-from input-fn nil))
+  ([input-fn default]
+   (let [input (clojure.string/trim (input-fn))]
+     (if (empty? input)
+       default
+       (clojure.string/lower-case input)))))
 
 ;; just a wrapper around the above to provide the same interface
 (def get-input
-  (get-input-from read-line))
+  (partial get-input-from read-line))
 
 (defn characters-as-strings
   "turns a string into a series of strings made of only characters"
