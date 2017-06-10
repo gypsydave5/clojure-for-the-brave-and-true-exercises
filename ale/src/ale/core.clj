@@ -59,3 +59,9 @@
   ([x & rest]
    `(let [this-or# ~x]
       (if this-or# this-or# (my-or ~@rest)))))
+
+(defmacro defattrs
+  [& pairs]
+  (do
+    (map (fn [[f-name keyword]] `(def ~f-name (comp ~keyword :attributes)))
+         (partition 2 pairs))))
